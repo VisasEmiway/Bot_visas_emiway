@@ -92,9 +92,9 @@ REQUIREMENTS_TEXT = (
 
 FAQ_TEXT = (
     "❓ FAQ:\n"
-    "• How long does it take? — Usually 3–10 business days.\n"
-    "• Is the fee refundable? — Payments are processed after document check.\n"
-    "• How will I get updates? — We will contact you via Telegram or email."
+    "• How long does it take? — Visa processing usually takes 4 to 10 business days, depending on the country and the consulate’s workload.\n"
+    "• Refund of the fee? — The fee is non-refundable if the documents have already been reviewed and submitted for processing. Payments are charged only after all your documents have been checked to avoid errors and incomplete applications.\n"
+    "• How will I receive updates? — We will contact you via Telegram or the email address you provided as soon as the status of your application changes."
 )
 
 ELIGIBLE_LIST = (

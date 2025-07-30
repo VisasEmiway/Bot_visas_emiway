@@ -7,6 +7,9 @@ Python 3.10+, python-telegram-bot v20+ (async API).
 """
 
 import logging
+import os  # FIX-KEEPALIVE
+import asyncio  # FIX-KEEPALIVE
+from aiohttp import web  # FIX-KEEPALIVE
 from typing import Dict, Any, Optional, Tuple
 
 from telegram import (
@@ -544,7 +547,22 @@ async def error_handler(update: Optional[Update], context: ContextTypes.DEFAULT_
     except Exception:
         pass
 
+# =========================
+# Keep-alive tiny web server (Render Free)
+# =========================
+async def _health(request):  # FIX-KEEPALIVE
+    return web.Response(text="OK")
 
+async def start_keepalive_server():  # FIX-KEEPALIVE
+    app = web.Application()
+    app.router.add_get("/", _health)
+    app.router.add_get("/health", _health)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", "10000"))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    logger.info(f"Keep-alive web server started on port {port}")
 # =========================
 # Application setup
 # =========================
@@ -614,11 +632,20 @@ def build_application():
     return app
 
 
-def main():
+async def _main_async():  # FIX-KEEPALIVE
+    # 1) tiny web-server для keep-alive
+    await start_keepalive_server()
+    # 2) Telegram-бот (v20+)
     app = build_application()
-    logger.info("Bot started")
-    app.run_polling(close_loop=False)
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+    logger.info("Bot started (polling + keep-alive web)")
+    # держим процесс
+    await asyncio.Event().wait()
 
+def main():  # FIX-KEEPALIVE
+    asyncio.run(_main_async())
 
 if __name__ == "__main__":
     main()
